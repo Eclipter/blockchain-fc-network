@@ -38,6 +38,7 @@ rule NetworkAdminSystem {
     action: ALLOW
 }
 
+
 rule ContractorReadPermissionRule {
     description: "Everyone can view contractors"
     participant: "ANY"
@@ -62,15 +63,17 @@ rule InspectorReadPermissionRule {
     action: ALLOW
 }
 
-rule OrderReadPermissionRuleContractor {
-    description: "Contractors can view orders"
-    participant: "by.bsuir.fivecubits.Contractor"
+
+rule OrderReadContractorPermissionRule {
+    description: "Contractors can view their orders"
+    participant(p): "by.bsuir.fivecubits.Contractor"
     operation: READ
-    resource: "by.bsuir.fivecubits.Order"
+    resource(r): "by.bsuir.fivecubits.Order"
+    condition: (p.contractorId == r.contractor.contractorId)
     action: ALLOW
 }
 
-rule OrderReadPermissionRuleSupplier {
+rule OrderReadSupplierPermissionRule {
     description: "Suppliers can view orders"
     participant: "by.bsuir.fivecubits.Supplier"
     operation: READ
@@ -78,19 +81,58 @@ rule OrderReadPermissionRuleSupplier {
     action: ALLOW
 }
 
-rule TicketReadPermissionRule {
-    description: "Everyone can view tickets"
-    participant: "ANY"
+
+rule TicketReadContractorPermissionRule {
+    description: "Contractors can view their tickets"
+    participant(p): "by.bsuir.fivecubits.Contractor"
+    operation: READ
+    resource(r): "by.bsuir.fivecubits.Ticket"
+    condition: (p.contractorId == r.order.contractor.contractorId)
+    action: ALLOW
+}
+
+rule TicketReadSupplierPermissionRule {
+    description: "Suppliers can view their tickets"
+    participant(p): "by.bsuir.fivecubits.Supplier"
+    operation: READ
+    resource(r): "by.bsuir.fivecubits.Ticket"
+    condition: (p.supplierId == r.supplier.supplierId)
+    action: ALLOW
+}
+
+rule TicketReadInspectorPermissionRule {
+    description: "Inspectors can view all tickets"
+    participant: "by.bsuir.fivecubits.Inspector"
     operation: READ
     resource: "by.bsuir.fivecubits.Ticket"
     action: ALLOW
 }
 
-rule InspectionReadPermissionRule {
-    description: "Everyone can view inspections"
-    participant: "ANY"
+
+rule InspectionReadContractorPermissionRule {
+    description: "Contractors can view their inspections"
+    participant(p): "by.bsuir.fivecubits.Contractor"
     operation: READ
-    resource: "by.bsuir.fivecubits.Inspection"
+    resource(r): "by.bsuir.fivecubits.Inspection"
+    condition: (p.contractorId == r.ticket.order.contractor.contractorId)
+    action: ALLOW
+}
+
+rule InspectionReadSupplierPermissionRule {
+    description: "Suppliers can view their inspections"
+    participant(p): "by.bsuir.fivecubits.Supplier"
+    operation: READ
+    resource(r): "by.bsuir.fivecubits.Inspection"
+    condition: (p.supplierId == r.ticket.supplier.supplierId)
+    action: ALLOW
+}
+
+rule InspectionReadInspectorPermissionRule {
+    description: "Inspectors can view their inspections"
+    participant(p): "by.bsuir.fivecubits.Inspector"
+    operation: READ
+    resource(r): "by.bsuir.fivecubits.Inspection"
+    condition: (p.inspectorId == r.inspector.inspectorId)
     action: ALLOW
 }
 
