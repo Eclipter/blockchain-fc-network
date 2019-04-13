@@ -1,0 +1,193 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Access control rules for fivecubits-network
+ */
+// rule Default {
+//     description: "Allow all participants access to all resources"
+//     participant: "ANY"
+//     operation: ALL
+//     resource: "by.bsuir.fivecubits.*"
+//     action: ALLOW
+// }
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+rule ContractorReadPermissionRule {
+    description: "Everyone can view contractors"
+    participant: "ANY"
+    operation: READ
+    resource: "by.bsuir.fivecubits.Contractor"
+    action: ALLOW
+}
+
+rule SupplierReadPermissionRule {
+    description: "Everyone can view suppliers"
+    participant: "ANY"
+    operation: READ
+    resource: "by.bsuir.fivecubits.Supplier"
+    action: ALLOW
+}
+
+rule InspectorReadPermissionRule {
+    description: "Everyone can view inspectors"
+    participant: "ANY"
+    operation: READ
+    resource: "by.bsuir.fivecubits.Inspector"
+    action: ALLOW
+}
+
+rule OrderReadPermissionRuleContractor {
+    description: "Contractors can view orders"
+    participant: "by.bsuir.fivecubits.Contractor"
+    operation: READ
+    resource: "by.bsuir.fivecubits.Order"
+    action: ALLOW
+}
+
+rule OrderReadPermissionRuleSupplier {
+    description: "Suppliers can view orders"
+    participant: "by.bsuir.fivecubits.Supplier"
+    operation: READ
+    resource: "by.bsuir.fivecubits.Order"
+    action: ALLOW
+}
+
+rule TicketReadPermissionRule {
+    description: "Everyone can view tickets"
+    participant: "ANY"
+    operation: READ
+    resource: "by.bsuir.fivecubits.Ticket"
+    action: ALLOW
+}
+
+rule InspectionReadPermissionRule {
+    description: "Everyone can view inspections"
+    participant: "ANY"
+    operation: READ
+    resource: "by.bsuir.fivecubits.Inspection"
+    action: ALLOW
+}
+
+rule OrderCreateTransactionCRPermissionRule {
+    description: "Order tansaction can only be created by contractor"
+    participant: "by.bsuir.fivecubits.Contractor"
+    operation: CREATE, READ
+    resource: "by.bsuir.fivecubits.OrderCreate"
+    action: ALLOW
+}
+
+rule OrderCreatePermissionRule {
+    description: "Order can only be created by contractor"
+    participant(p): "by.bsuir.fivecubits.Contractor"
+    operation: CREATE
+    resource(r): "by.bsuir.fivecubits.Order"
+    transaction(tx): "by.bsuir.fivecubits.OrderCreate"
+    condition: (tx.contractorId == p.contractorId)
+    action: ALLOW
+}
+
+rule TicketCreateTransactionCRPermissionRule {
+    description: "Ticket transaction can only be created by supplier"
+    participant: "by.bsuir.fivecubits.Supplier"
+    operation: CREATE, READ
+    resource: "by.bsuir.fivecubits.TicketCreate"
+    action: ALLOW
+}
+
+rule TicketCreatePermissionRule {
+    description: "Ticket can only be created by supplier"
+    participant(p): "by.bsuir.fivecubits.Supplier"
+    operation: CREATE
+    resource(r): "by.bsuir.fivecubits.Ticket"
+    transaction(tx): "by.bsuir.fivecubits.TicketCreate"
+    condition: (tx.supplierId == p.supplierId)
+    action: ALLOW
+}
+
+rule InspectionCreateTransactionCRPermissionRule {
+    description: "Inspection transaction can only be created by inspector"
+    participant: "by.bsuir.fivecubits.Inspector"
+    operation: CREATE, READ
+    resource: "by.bsuir.fivecubits.InspectionCreate"
+    action: ALLOW
+}
+
+rule InspectionCreatePermissionRule {
+    description: "Inspection can only be created by Inspector"
+    participant(p): "by.bsuir.fivecubits.Inspector"
+    operation: CREATE
+    resource(r): "by.bsuir.fivecubits.Inspection"
+    transaction(tx): "by.bsuir.fivecubits.InspectionCreate"
+    condition: (tx.inspectorId == p.inspectorId)
+    action: ALLOW
+}
+
+rule TicketStatusUpdateTransactionPermissionRule {
+    description: "Ticket status transaction can only be submitted by ticket supplier"
+    participant: "by.bsuir.fivecubits.Supplier"
+    operation: CREATE, READ
+    resource: "by.bsuir.fivecubits.TicketStatusChange"
+    action: ALLOW
+}
+
+rule TicketStatusUpdatePermissionRule {
+    description: "Ticket status can only be updated by ticket supplier"
+    participant(s): "by.bsuir.fivecubits.Supplier"
+    operation: UPDATE
+    resource(t): "by.bsuir.fivecubits.Ticket"
+    transaction(tx): "by.bsuir.fivecubits.TicketStatusChange"
+    condition: (t.supplier.supplierId == s.supplierId)
+    action: ALLOW
+}
+
+rule InspectionStatusUpdateTransactionPermissionRule {
+    description: "Inspection status transaction can only be submitted by inspector"
+    participant: "by.bsuir.fivecubits.Inspector"
+    operation: CREATE, READ
+    resource: "by.bsuir.fivecubits.InspectionStatusChange"
+    action: ALLOW
+}
+
+rule InspectionStatusUpdatePermissionRule {
+    description: "Inspection status can only be updated by inspection inspector"
+    participant(ir): "by.bsuir.fivecubits.Inspector"
+    operation: UPDATE
+    resource(ins): "by.bsuir.fivecubits.Inspection"
+    transaction(tx): "by.bsuir.fivecubits.InspectionStatusChange"
+    condition: (ins.inspector.inspectorId == ir.inspectorId)
+    action: ALLOW
+}
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}

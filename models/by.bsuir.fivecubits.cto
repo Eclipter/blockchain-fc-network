@@ -1,0 +1,81 @@
+/**
+ * My commodity trading network
+ */
+namespace by.bsuir.fivecubits
+
+enum TicketStatus {
+  o ACCEPTED
+  o REJECTED
+  o PENDING
+}
+enum InspectionStatus {
+  o PASSED
+  o FAILED
+  o NOT_ASSESSED
+}
+
+
+asset Order identified by orderId {
+  o String orderId
+  o String description
+  --> Contractor contractor
+}
+asset Ticket identified by ticketId {
+  o String ticketId
+  o String description
+  o TicketStatus status default="PENDING"
+  --> Supplier supplier
+  --> Order order
+}
+asset Inspection identified by inspectionId {
+  o String inspectionId
+  o String description
+  o InspectionStatus status default="NOT_ASSESSED"
+  --> Inspector inspector
+  --> Ticket ticket
+}
+
+
+participant Contractor identified by contractorId {
+  o String contractorId
+  o String firstName
+  o String lastName
+}
+participant Supplier identified by supplierId {
+  o String supplierId
+  o String firstName
+  o String lastName
+}
+participant Inspector identified by inspectorId {
+  o String inspectorId
+  o String firstName
+  o String lastName
+}
+
+
+transaction OrderCreate {
+  o String orderId
+  o String description
+  o String contractorId
+}
+transaction TicketCreate {
+  o String ticketId
+  o String description
+  o String supplierId
+  o String orderId
+}
+transaction InspectionCreate {
+  o String inspectionId
+  o String description
+  o String inspectorId
+  o String ticketId
+}
+
+transaction TicketStatusChange {
+  o String ticketId
+  o TicketStatus newStatus
+}
+transaction InspectionStatusChange {
+  o String inspectionId
+  o InspectionStatus newStatus
+}
