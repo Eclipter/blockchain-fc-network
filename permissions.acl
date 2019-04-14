@@ -191,20 +191,20 @@ rule InspectionCreatePermissionRule {
 }
 
 rule TicketStatusUpdateTransactionPermissionRule {
-    description: "Ticket status transaction can only be submitted by ticket supplier"
-    participant: "by.bsuir.fivecubits.Supplier"
+    description: "Ticket status transaction can only be submitted by ticket contractor"
+    participant: "by.bsuir.fivecubits.Contractor"
     operation: CREATE, READ
     resource: "by.bsuir.fivecubits.TicketStatusChange"
     action: ALLOW
 }
 
 rule TicketStatusUpdatePermissionRule {
-    description: "Ticket status can only be updated by ticket supplier"
-    participant(s): "by.bsuir.fivecubits.Supplier"
+    description: "Ticket status can only be updated by ticket contractor"
+    participant(s): "by.bsuir.fivecubits.Contractor"
     operation: UPDATE
     resource(t): "by.bsuir.fivecubits.Ticket"
     transaction(tx): "by.bsuir.fivecubits.TicketStatusChange"
-    condition: (t.supplier.supplierId == s.supplierId)
+    condition: (t.order.contractor.contractorId == s.contractorId)
     action: ALLOW
 }
 
